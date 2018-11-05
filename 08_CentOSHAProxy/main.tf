@@ -147,7 +147,7 @@ resource "null_resource" "firewall_provisioner" {
     ]
   }
 
-  # Set up the NIC for the private network
+  # Set up the NIC for the private network.
   provisioner "remote-exec" {
     inline = [
       "head -5 /etc/sysconfig/network-scripts/ifcfg-${var.firewall_lan_nic} >> /root/ifcfg-${var.firewall_lan_nic}",
