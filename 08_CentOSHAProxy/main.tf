@@ -195,7 +195,7 @@ resource "null_resource" "firewall_provisioner" {
     ]
   }
 
-  # Install and cofigure the firewall to allow incomming traffic.
+  # Install HAProxy and cofigure the firewall to allow incomming traffic.
   # The HAProxy config is done AFTER the webservers are created. 
   # (Why? Their IPs are not known yet.)
   provisioner "remote-exec" {
