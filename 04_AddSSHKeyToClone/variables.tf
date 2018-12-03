@@ -11,11 +11,11 @@ variable "datastore" {
   type = "string"
 }
 
-variable "iso_datastore" {
+variable "resource_pool" {
   type = "string"
 }
 
-variable "resource_pool" {
+variable "virtual_machines_folder" {
   type = "string"
 }
 
@@ -23,33 +23,6 @@ variable "network" {
   type = "string"
 }
 
-variable "esxi_host" {
-  type = "string"
-}
-
-variable "vswitch_name" {
-  type = "string"
-}
- 
-variable "port_group_name" {
-  type = "string"
-}
-
-variable "firewall_template" {
-  type = "string" 
-}
-
-variable "firewall_vmname" {
-  type = "string" 
-  description = "The name of the VM."
-}
-
-variable "firewall_num_cpus" {} 
-variable "firewall_memory" {}
-
-variable "firewall_disk" {
-  type = "string"
-}
 variable "server_template" {
   type = "string" 
 }
@@ -72,4 +45,31 @@ variable "server_host_name" {
 
 variable "server_domain" {
   type = "string"
+}
+
+variable "ipv4_address" {
+  type = "string"
+}
+
+variable "ipv4_netmask" {
+  default = "24"
+}
+
+variable "ipv4_gateway" {
+  type = "string"
+}
+
+variable "dns_server_list" {
+  type = "list"
+}
+variable "ssh_user" {
+	type = "string"
+}
+
+variable "ssh_password" {
+	type = "string"
+}
+
+variable "id_rsa" {
+	type = "string"
 }

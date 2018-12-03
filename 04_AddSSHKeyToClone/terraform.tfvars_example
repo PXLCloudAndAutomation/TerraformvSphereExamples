@@ -1,0 +1,24 @@
+# Datacenter information
+datacenter    = "Datacenter"
+datastore     = "datastore1"
+resource_pool = "CnAResourcePool"
+network       = "VM Network"
+virtual_machines_folder = ""
+
+# SSH information
+ssh_user     = "user"
+ssh_password = "user"
+id_rsa       = "none"
+
+# Server information
+server_template  = "CentOS-7-1NIC-base-template"
+server_vmname    = "serverWithKey"
+server_num_cpus  = 2
+server_memory    = 2048
+server_disk      = "server"
+server_host_name = "serverWithKey"
+server_domain    = "local"
+ipv4_address     = "10.72.29.20"
+ipv4_netmask     = 24
+ipv4_gateway     = "10.72.29.1"
+dns_server_list  = ["10.50.40.100", "10.50.40.101"]
