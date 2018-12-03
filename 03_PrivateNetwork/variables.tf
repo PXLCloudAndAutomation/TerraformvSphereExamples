@@ -7,22 +7,6 @@ variable "datacenter" {
   type = "string" 
 }
 
-variable "datastore" {
-  type = "string"
-}
-
-variable "iso_datastore" {
-  type = "string"
-}
-
-variable "resource_pool" {
-  type = "string"
-}
-
-variable "network" {
-  type = "string"
-}
-
 variable "esxi_host" {
   type = "string"
 }

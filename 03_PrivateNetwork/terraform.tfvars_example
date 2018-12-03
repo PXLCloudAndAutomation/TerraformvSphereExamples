@@ -1,0 +1,7 @@
+# Datacenter information
+datacenter    = "Datacenter"
+
+# Setup information
+esxi_host       = "your_esxi_host_ip_or_fqdn"
+vswitch_name    = "InternalSwitch"
+port_group_name = "InternalPortGroup"
