@@ -1,10 +1,11 @@
 provider "vsphere" {
+  version = "~> 1.9"
   user           = "${var.vsphere_server_login["user"]}"
   password       = "${var.vsphere_server_login["password"]}"
   vsphere_server = "${var.vsphere_server_login["vsphere_server"]}"
 
   # If you have a self-signed cert
-  allow_unverified_ssl = true
+  allow_unverified_ssl = "${var.vsphere_server_login["allow_unverified_ssl"]}"
 }
 
 data "vsphere_datacenter" "dc" {
@@ -16,11 +17,7 @@ data "vsphere_datastore" "datastore" {
 	datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
-data "vsphere_datastore" "iso_datastore" {
-	name = "${var.iso_datastore}"
-	datacenter_id = "${data.vsphere_datacenter.dc.id}"
-}
-
+# TODO If your setup don't have a resource_pool, create one!
 data "vsphere_resource_pool" "pool" {
 	name = "${var.resource_pool}"
 	datacenter_id = "${data.vsphere_datacenter.dc.id}"
@@ -43,9 +40,12 @@ resource "vsphere_virtual_machine" "server" {
   name = "${var.server_vmname}"
   resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
   datastore_id = "${data.vsphere_datastore.datastore.id}"
-  
+
+  folder = "${var.virtual_machines_folder}"
+
   num_cpus = "${var.server_num_cpus}"
   memory   = "${var.server_memory}"
+  memory_reservation = "${var.server_memory}"
   guest_id = "${data.vsphere_virtual_machine.server_template.guest_id}"
   scsi_type = "${data.vsphere_virtual_machine.server_template.scsi_type}"
   
@@ -70,10 +70,15 @@ resource "vsphere_virtual_machine" "server" {
         domain = "${var.server_domain}"
       }
 
-      network_interface {} # Even if the network isn't customized, it needs to
+      network_interface {
+        ipv4_address = "${var.ipv4_address}"
+        ipv4_netmask = "${var.ipv4_netmask}"
+      } # Even if the network isn't customized, it needs to
                            # have a block here.
                            # This is a bug in the current Terraform version.
                            # TODO: Check if the bug is still present.
+      ipv4_gateway = "${var.ipv4_gateway}"
+      dns_server_list = "${var.dns_server_list}"
     }
   }
 }
