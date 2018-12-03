@@ -11,10 +11,6 @@ variable "datastore" {
   type = "string"
 }
 
-variable "iso_datastore" {
-  type = "string"
-}
-
 variable "resource_pool" {
   type = "string"
 }
@@ -32,6 +28,10 @@ variable "server_vmname" {
   description = "The name of the VM."
 }
 
+variable "virtual_machines_folder" {
+  type = "string"
+}
+
 variable "server_num_cpus" {} 
 variable "server_memory" {}
 
@@ -47,6 +47,21 @@ variable "server_domain" {
   type = "string"
 }
 
+variable "ipv4_address" {
+  type = "string"
+}
+
+variable "ipv4_netmask" {
+  default = "24"
+}
+
+variable "ipv4_gateway" {
+  type = "string"
+}
+
+variable "dns_server_list" {
+  type = "list"
+}
 variable "ssh_user" {
 	type = "string"
 }

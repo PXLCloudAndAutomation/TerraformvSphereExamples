@@ -1,10 +1,15 @@
 provider "vsphere" {
+  version = "~> 1.9"
   user           = "${var.vsphere_server_login["user"]}"
   password       = "${var.vsphere_server_login["password"]}"
   vsphere_server = "${var.vsphere_server_login["vsphere_server"]}"
 
   # If you have a self-signed cert
-  allow_unverified_ssl = true
+  allow_unverified_ssl = "${var.vsphere_server_login["allow_unverified_ssl"]}"
+}
+
+provider "null" {
+  version = "~> 1.0"
 }
 
 data "vsphere_datacenter" "dc" {
@@ -16,11 +21,7 @@ data "vsphere_datastore" "datastore" {
 	datacenter_id = "${data.vsphere_datacenter.dc.id}"
 }
 
-data "vsphere_datastore" "iso_datastore" {
-	name = "${var.iso_datastore}"
-	datacenter_id = "${data.vsphere_datacenter.dc.id}"
-}
-
+# TODO If your setup doesn't have a resource_pool, create one!
 data "vsphere_resource_pool" "pool" {
 	name = "${var.resource_pool}"
 	datacenter_id = "${data.vsphere_datacenter.dc.id}"
@@ -43,9 +44,12 @@ resource "vsphere_virtual_machine" "web_server" {
   name = "${var.server_vmname}"
   resource_pool_id = "${data.vsphere_resource_pool.pool.id}"
   datastore_id = "${data.vsphere_datastore.datastore.id}"
+
+  folder = "${var.virtual_machines_folder}"
   
   num_cpus = "${var.server_num_cpus}"
   memory   = "${var.server_memory}"
+  memory_reservation = "${var.server_memory}"
   guest_id = "${data.vsphere_virtual_machine.server_template.guest_id}"
   scsi_type = "${data.vsphere_virtual_machine.server_template.scsi_type}"
   
@@ -70,11 +74,55 @@ resource "vsphere_virtual_machine" "web_server" {
         domain = "${var.server_domain}"
       }
 
-      network_interface {} # Even if the network isn't customized, it needs to
-                           # have a block here.
-                           # This is a bug in the current Terraform version.
-                           # TODO: Check if the bug is still present.
+      network_interface {
+        ipv4_address = "${var.ipv4_address}"
+        ipv4_netmask = "${var.ipv4_netmask}"
+      }
+
+      ipv4_gateway = "${var.ipv4_gateway}"
+      dns_server_list = "${var.dns_server_list}"
     }
+  }
+}
+
+
+# Add a new SSH key to the server.
+# ------------------------------------------------------------------------------
+resource "null_resource" "server_add_ssh_key" {
+	depends_on = ["vsphere_virtual_machine.web_server"] 
+
+  triggers = {
+    werbserver = "${vsphere_virtual_machine.web_server.id}"
+  }
+
+  provisioner "local-exec" {
+    command = "./create_ssh_keys_local.sh"
+  }
+
+  connection {
+    type = "ssh"
+    host = "${var.ipv4_address}"
+    user = "${var.ssh_user}"
+    password = "${var.ssh_password}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+    # "sudo yum upgrade -y",
+      "mkdir ~/.ssh/",
+      "chmod 700 /home/${var.ssh_user}/.ssh/",
+    ]
+  }
+
+  provisioner "file" {
+    source      = "./key/id_rsa.pub"
+    destination = "/home/${var.ssh_user}/.ssh/authorized_keys"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "chmod 600 /home/${var.ssh_user}/.ssh/authorized_keys",
+    ]
   }
 }
 
@@ -90,36 +138,34 @@ resource "null_resource" "webserver_provisioner" {
 
   connection {
     type = "ssh"
-    # TODO: Make this more generic.
-    host = "${vsphere_virtual_machine.web_server.0.guest_ip_addresses.0}"
+    host = "${var.ipv4_address}"
     user = "${var.ssh_user}"
     private_key = "${file(var.id_rsa)}"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "yum upgrade -y",
-      "yum -y install httpd",
-      "yum -y install php",
+      "sudo yum upgrade -y",
+      "sudo yum -y install httpd",
+      "sudo yum -y install php",
     ]
   }
 
   provisioner "file" {
     source      = "./files/index.php"
-    destination = "/var/www/html/index.php"
+    destination = "/home/${var.ssh_user}/index.php"
   }
 
   provisioner "remote-exec" {
     inline = [
-      "systemctl start httpd.service",
-      "systemctl enable httpd.service",
-      "firewall-cmd --permanent --zone=public --add-service=http",
-      "firewall-cmd --permanent --zone=public --add-service=https",
-      "firewall-cmd --reload",
+      "sudo mv /home/${var.ssh_user}/index.php /var/www/html/index.php",
+      "sudo systemctl start httpd.service",
+      "sudo systemctl enable httpd.service",
+      "sudo systemctl enable firewalld",
+      "sudo systemctl start firewalld",
+      "sudo firewall-cmd --permanent --zone=public --add-service=http",
+      "sudo firewall-cmd --permanent --zone=public --add-service=https",
+      "sudo firewall-cmd --reload",
     ]
-  }
-
-	provisioner "local-exec" {
-    command = "echo 'Webserver IP: ${vsphere_virtual_machine.web_server.default_ip_address}' > ip.txt"
   }
 }
