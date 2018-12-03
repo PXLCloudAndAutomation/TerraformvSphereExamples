@@ -1,0 +1,55 @@
+# Datacenter information
+datacenter    = "Datacenter"
+datastore     = "datastore1"
+resource_pool = "CnAResourcePool"
+network       = "VM Network"
+virtual_machines_folder = ""
+
+# Setup information
+esxi_host       = "10.72.29.3"
+vswitch_name    = "InternalSwitch"
+port_group_name = "InternalPortGroup"
+
+# SSH information
+ssh_user     = "user"
+ssh_password = "user"
+id_rsa       = "./key/id_rsa"
+
+# Firewall information
+firewall_template  = "CentOS-7-2NICs-base-template"
+firewall_vmname    = "firewall"
+firewall_num_cpus  = 2
+firewall_memory    = 1024
+firewall_disk      = "firewall"
+firewall_host_name = "firewall"
+firewall_domain    = "local"
+
+firewall_wan_nic    = "ens192"
+firewall_wan_ipv4_address     = "10.72.29.20"
+firewall_wan_ipv4_netmask     = 24
+firewall_wan_ipv4_gateway     = "10.72.29.1"
+firewall_wan_dns_server_list  = ["10.50.40.100", "10.50.40.101"]
+
+firewall_lan_nic    = "ens224"
+firewall_lan_zone   = "internal"
+firewall_lan        = "192.168.0.0"
+firewall_lan_mask   = "255.255.255.0"
+firewall_lan_prefix = "24"
+firewall_lan_ip     = "192.168.0.1"
+firewall_lan_DNS1   = "192.168.0.1"
+firewall_lan_DNS2   = "10.50.40.100" # PXL DNS Server
+firewall_lan_DNS3   = "10.50.40.101" # PXL DNS Server
+firewall_dhcp_begin = "192.168.0.10"
+firewall_dhcp_end   = "192.168.0.250"
+firewall_dhcp_time  = "12h"
+
+
+# Server information
+number_of_webservers = 2
+server_template  = "CentOS-7-1NIC-webserver-template"
+server_vmname    = "webserver"
+server_num_cpus  = 2
+server_memory    = 2048
+server_disk      = "server"
+server_host_name = "webserver"
+server_domain    = "local"
