@@ -1,9 +1,6 @@
-# Login information
-vsphere_server_login {
-  "user"           = ""
-  "password"       = ""
-  "vsphere_server" = ""
-}
+# This file gets automatically loaded, it has the extention: .tfars
+
+# Alter the variables according to your setup!
 
 # Datacenter information
 datacenter    = "Datacenter"
@@ -13,4 +10,4 @@ resource_pool = "CnAResourcePool"
 network       = "VM Network"
 
 # Server information
-server_template  = "CentOS-7-template"
+server_template  = "CentOS-7-1NIC-base-template"
