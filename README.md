@@ -67,3 +67,10 @@ This provisions a clone, it adds Apache and PHP to create a simple webserver.
 ### `06_CentOSHAProxyOwnCluster`
 The end result of this example is small setup containing a round robin load balancer using a HAProxy on Centos and multiple webservers (= cattle) on a private network.
 
+To test the HAProxy you can execute `wget`:
+
+For example:
+```bash
+$ wget 10.72.29.20 2>/dev/null; cat index.html | grep served; rm index.html
+```
+
