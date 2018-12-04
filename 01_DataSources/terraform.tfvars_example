@@ -1,6 +1,10 @@
-# This file gets automatically loaded, it has the extention: .tfars
-
-# Alter the variables according to your setup!
+# Login information
+#vsphere_server_login {
+#  "user"           = ""
+#  "password"       = ""
+#  "vsphere_server" = ""
+#  "allow_unverified_ssl" = true
+#}
 
 # Datacenter information
 datacenter    = "Datacenter"

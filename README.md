@@ -7,23 +7,26 @@ There are a bunch of prerequisites to use these examples:
 * A Unix-like host OS (OSX, GNU/Linux).
 * Terraform (Terraform v0.11.10)
 * Python 2 (Python 2.7.15rc1)
-* VMware vSphere 6.5 login access
-* VMware esxi 6.5 login access
-* CentOS-7-template (More info TBA)
-* CentOS-7-webserver-template (More info TBA)
-* pfSense-CE-2.4.4-template (More info TBA)
-* SSH keys to access the templates
+* VMware vSphere login access
+* [CentOS-7-1NIC-base-template](https://drive.google.com/file/d/1rO3r3dLq1r0ftX7U0aAbCJvBWoaH4PCm/view) (Login/Passwd: user/user)
+* [CentOS-7-2NICs-base-template](https://drive.google.com/file/d/1y-qoK7-AuzBmQDvthiD7eZZe03OtuNET/view) (Login/Passwd: user/user)
 
 ## Before running ANY example
-VMWare vSphere and VMWare esxi access is absolutely necessary. Test it is before
-running any of the examples.
+VMWare vSphere access is absolutely necessary. Test this before running any of the examples. For example using Postman.
+
+Make sure the provided templates [CentOS-7-1NIC-base-template](https://drive.google.com/file/d/1rO3r3dLq1r0ftX7U0aAbCJvBWoaH4PCm/view) and [CentOS-7-2NICs-base-template](https://drive.google.com/file/d/1y-qoK7-AuzBmQDvthiD7eZZe03OtuNET/view) are available on the vSphere system **as templates**. Deploy these as OVF and save them as templates.
 
 ## Before running an example
-Each subdirectory, listed below in The examples, contains a complete Terraform example, including the `terraform.tfvars` file. Each example needs 3 steps to get up and running. Execute the commands inside the directory of the example.
+Each subdirectory, listed below in The examples, contains a complete Terraform example, including an `terraform.tfvars`  example file caled `terraform.tfvars_example`. 
 
-1. Fill in the necessary variables.
-2. `$ terraform plan`
-3. `$ terraform apply`
+Each example needs a few steps to get up and running. Execute the commands inside the directory of the example.
+
+0. Remove the `_example` part from the example file. (**Pro-tip:** copy it!)
+1. Alter the values of the variables in `terraform.tfvars`.
+   Do not forget to uncomment the login information and add your own credentials.
+2. `$ terraform init`
+3. `$ terraform plan`
+4. `$ terraform apply`
 
 ## Before moving to another example
 Always clean up before going to the next (or previous) example, otherwise (strange) errors can occur. Debugging those is time consuming.
@@ -47,18 +50,20 @@ This creates a simple virtual machine from an already existing template.
 ### `03_PrivateNetwork`
 A virtual switch and port group are the building blocks to create a private network on esxi. This example explains how Terraform can create such network.
 
-### `04_SecondCloneFromTemplate`
-A second example to create a virtual machine from a template.
+### `04_AddSSHKeyToClone`
+This will clone from a existing template and add an SSH key.
+
+To bybass ssh issues (Already known SSH host) use the following SSH options:
+
+```bash
+$ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i key/id_rsa user@10.72.29.20
+```
 
 ### `05_AddWebserverToCloneFromTempate`
-This provisions a clone, it adds Apache and PHP to create a simple webserver.
+This provisions a clone, it adds Apache and PHP to create a simple webserver. 
 
-### `06_MultipleWebServersBehindpfSense`
-This example creates a small setup, putting pfSense in front of a fixnum of webservers.
+**Save this VirtualMachine as `CentOS-7-1NIC-webserver-template`. It is needed in the following Example**.
 
-### `07_CentOSNATRouter`
-A NAT router will be create in this example.
-
-### `08_CentOSHAProxy`
-The end result of this example is small setup containing a round robin load balancer using a HAProxy on Centos and multiple webservers on a private network.
+### `06_CentOSHAProxyOwnCluster`
+The end result of this example is small setup containing a round robin load balancer using a HAProxy on Centos and multiple webservers (= cattle) on a private network.
 
